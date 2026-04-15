@@ -1,0 +1,20 @@
+CC = gcc
+CFLAGS = -Wall -Wextra -g
+
+SRCS = main.c HTTP/structs/requestLine.c HTTP/requestParser.c HTTP/processRequest.c HTTP/structs/response.c HTTP/utils/readFile.c HTTP/methods/get.c
+OBJS = $(SRCS:.c=.o)
+TARGET = server
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+run: clean all
+	./$(TARGET)
+
+clean:
+	rm -f $(OBJS) $(TARGET)
