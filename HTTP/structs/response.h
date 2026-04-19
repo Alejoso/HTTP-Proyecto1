@@ -27,7 +27,7 @@ typedef struct {
 typedef struct {
     HTTP_Status status;
     HTTP_Version httpVersion;
-    HeaderList headerList;
+    HeaderList *headerList;
     char *content;
     size_t contentLength; 
 } HTTP_Response;
@@ -35,5 +35,8 @@ typedef struct {
 void printResponse( HTTP_Response *res);
 void freeResponse(HTTP_Response *res);
 HTTP_Response *createHTTPResponse();
+HeaderList *createHeaderList();
+int addHeader(HeaderList *list , const char *name , const char *value);
+void freeHeaderList(HeaderList *list);
 
 #endif

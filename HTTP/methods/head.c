@@ -1,7 +1,10 @@
 #include "head.h"
 #include "../utils/readFile.h"
 
-HTTP_Status HTTPHead(RequestLine *req , HTTP_Response *res) {
+#include <string.h>
+#include <stdlib.h>
+
+HTTP_Status HTTPHead(RequestLine *req) {
     // Sacar la ruta por defecto (/index.html)
     if(strcmp(req->requestURI , "/") == 0){
         char *defaultURI = "/index.html";

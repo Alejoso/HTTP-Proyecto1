@@ -4,8 +4,8 @@ CFLAGS = -Wall -Wextra -g
 SRCS = main.c \
 	HTTP/structs/requestLine.c HTTP/structs/response.c \
 	HTTP/requestParser.c HTTP/processRequest.c \
-	HTTP/utils/readFile.c HTTP/utils/getEnumRequestLine.c HTTP/utils/enumToString.c \
-	HTTP/methods/get.c
+	HTTP/utils/readFile.c HTTP/utils/getEnumRequestLine.c HTTP/utils/enumToString.c HTTP/utils/getDate.c\
+	HTTP/methods/get.c HTTP/methods/head.c
 
 OBJS = $(SRCS:.c=.o)
 TARGET = server
