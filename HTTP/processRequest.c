@@ -4,57 +4,41 @@
 #include <string.h>
 #include <stdio.h>
 
-HttpMethod getMethod(const char *strMethod){
 
-    if(strcmp(strMethod , "GET") == 0) return GET;
-    if(strcmp(strMethod , "HEAD") == 0) return HEAD;
-    if(strcmp(strMethod , "POST") == 0) return POST;
-    if(strcmp(strMethod , "PUT") == 0) return PUT;
-    if(strcmp(strMethod , "DELETE") == 0) return DELETE;
-    if(strcmp(strMethod , "TRACE") == 0) return TRACE;
-    if(strcmp(strMethod , "CONNECT") == 0) return CONNECT;
-    if(strcmp(strMethod , "OPTIONS") == 0) return OPTIONS;
-
-    return UNKNOWN;
-}
-
-
-int processRequest(RequestLine *req , HTTP_Response *res ){
+HTTP_Status processRequest(RequestLine *req , HTTP_Response *res){
     
-    HttpMethod method = getMethod(req->method);
+    if(req->method == METHOD_UNKNOWN) return STATUS_400;
+    if(req->httpVersion == VERSION_UNKNOWN) return STATUS_505;
 
-    switch (method){
-        case GET:
-            int e = HTTPGet(req , res);
-            if (e == -1) res->status = "400";
-            if (e == 0)res->status = "200";
-            return 0;
+    switch (req->method){
+        case METHOD_GET:
 
-        case HEAD:
+            return HTTPGet(req , res);
+
+        case METHOD_HEAD:
             break;
 
-        case POST:
+        case METHOD_POST:
             break;
 
-        case PUT:
+        case METHOD_PUT:
             break;
 
-        case DELETE:
+        case METHOD_DELETE:
             break;
 
-        case TRACE:
+        case METHOD_TRACE:
             break;
 
-        case CONNECT:
+        case METHOD_CONNECT:
             break;
 
-        case OPTIONS:
+        case METHOD_OPTIONS:
 
             break;
         
         default:
-            printf("Metodo no soportado\n");
-            return -1;
+            return STATUS_400;
     }
 
     return 0;

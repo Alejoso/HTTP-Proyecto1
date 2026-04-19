@@ -1,7 +1,12 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g
 
-SRCS = main.c HTTP/structs/requestLine.c HTTP/requestParser.c HTTP/processRequest.c HTTP/structs/response.c HTTP/utils/readFile.c HTTP/methods/get.c
+SRCS = main.c \
+	HTTP/structs/requestLine.c HTTP/structs/response.c \
+	HTTP/requestParser.c HTTP/processRequest.c \
+	HTTP/utils/readFile.c HTTP/utils/getEnumRequestLine.c \
+	HTTP/methods/get.c
+
 OBJS = $(SRCS:.c=.o)
 TARGET = server
 

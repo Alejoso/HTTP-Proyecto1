@@ -1,55 +1,63 @@
 #include "requestParser.h"
+#include "utils/getEnumRequestLine.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
-int parseRequestLine(const char *rawRequestLine , RequestLine *req){
+#define MAX_URI_LENGTH 2048
 
-    size_t n = strlen(rawRequestLine) / sizeof(rawRequestLine[0]);
+int parseRequestLine(const char *rawRequestLine , size_t rawLength, RequestLine *req){
 
     int count = 0;
     size_t lastLetter = 0;
 
     // Parsear todos los espacios en blanco y mirar que espacio corresponde a que parte del request
-    for(size_t i = 0 ; i < n ; i++){
+    for(size_t i = 0 ; i < rawLength ; i++){
         
         // Movemos el puntero i+1 veces (Ya que i es el espacio que separa entre expresiones)
         // Al hacer rawRequestLine + lastLetter estamos moviendo lastLetter veces el puntero para que apunte a la ultima letra encontrada
         if(rawRequestLine[i] == ' ' && count == 0){
 
             size_t length = i - lastLetter;
+            char tempMethod[16];
 
-            req->method = malloc(sizeof(char) * length + 1);
-            strncpy(req->method , rawRequestLine + lastLetter , length);
-            req->method[length] = '\0';
+            if(length >= sizeof(tempMethod) || length == 0) return -1;
 
+            memcpy(tempMethod, rawRequestLine + lastLetter , length);
+            tempMethod[length] = '\0';
+            req->method = getHTTPMethod(tempMethod);
+            
             lastLetter = i+1;
             count++;
-
-            continue;
         }
         
-        if(rawRequestLine[i] == ' ' && count == 1){
+        else if(rawRequestLine[i] == ' ' && count == 1){
 
             size_t length = i - lastLetter;
 
-            req->requestURI = malloc(sizeof(char) * length + 1);
-            strncpy(req->requestURI , rawRequestLine + lastLetter , length);
+            if (length == 0 || length > MAX_URI_LENGTH) return -1;
+
+            req->requestURI = malloc(length + 1);
+            memcpy(req->requestURI , rawRequestLine + lastLetter , length);
             req->requestURI[length] = '\0';
 
             lastLetter = i+1;
             count++;
-
         }
 
-        if(rawRequestLine[i] == '\r' && count == 2){
+        else if(rawRequestLine[i] == '\r' && count == 2){
+
+            if(i + 1 >= rawLength || rawRequestLine[i+1] != '\n' ) return -1;
 
             size_t length = i - lastLetter;
+            char tempVersion[32];
+            
+            if(length >= sizeof(tempVersion) || length == 0 ) return -1;
 
-            req->httpVersion = malloc(sizeof(char) * length + 1);
-            strncpy(req->httpVersion , rawRequestLine + lastLetter , length);\
-            req->httpVersion[length] = '\0';
+            memcpy(tempVersion , rawRequestLine + lastLetter , length);
+            tempVersion[length] = '\0';
+            req->httpVersion = getHTTPVersion(tempVersion);
 
             lastLetter = i+1;
             count++;
@@ -57,8 +65,7 @@ int parseRequestLine(const char *rawRequestLine , RequestLine *req){
     }
 
     if(count != 3){
-        freeRequestLine(req); // Limpiar los posibles campos que se hayan llenado
-        printf("No se encontrar los 3 argumentos necesarios del request line\n");
+        printf("No se encontraron los 3 argumentos necesarios del request line\n");
         return -1;
     }
 

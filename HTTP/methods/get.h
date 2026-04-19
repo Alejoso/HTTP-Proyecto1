@@ -4,6 +4,6 @@
 #include "../structs/requestLine.h"
 #include "../structs/response.h"
 
-int HTTPGet(RequestLine *req , HTTP_Response *res);
+HTTP_Status HTTPGet(RequestLine *req , HTTP_Response *res);
 
 #endif
