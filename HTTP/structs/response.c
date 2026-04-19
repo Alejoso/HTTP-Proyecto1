@@ -1,20 +1,22 @@
 #include "response.h"
+#include "../utils/enumToString.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-static char *statusToString(HTTP_Status status){
-    if(status == STATUS_200) return "200";
-    if(status == STATUS_404) return "404";
-    if(status == STATUS_400) return "400";
-    if(status == STATUS_505) return "505";
-    return "nadita";
-}
-
 void printResponse(HTTP_Response *res){
-    printf("\n\n\n\n---------------Estos son los valores de la respuesta--------------\n");
-    printf("Content: %s\n" , res->content);
-    printf("Status: %s\n" , statusToString(res->status));
+    char headerBuffer[4096];
+    snprintf(headerBuffer, sizeof(headerBuffer) , 
+        "%s %s %s\r\n"
+        "Content-Length: %zu\r\n"
+        "\r\n",
+        versionToString(res->httpVersion),
+        statusToString(res->status),
+        statusToReasonPhrase(res->status),
+        res->contentLength
+    );
+
+    printf("\n\n%s%s" , headerBuffer , res->content);
 }
 
 void freeResponse(HTTP_Response *res){
@@ -26,7 +28,12 @@ void freeResponse(HTTP_Response *res){
 
 HTTP_Response *createHTTPResponse(){
     HTTP_Response *res = malloc(sizeof(HTTP_Response));
-    res->content = NULL;
+
     res->status = STATUS_NULL;
+    res->httpVersion = VERSION_HTTP1;
+    
+    res->content = NULL;
+    res->contentLength = 0;
+    
     return res;
 }

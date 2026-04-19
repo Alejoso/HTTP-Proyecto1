@@ -14,13 +14,16 @@ HTTP_Status HTTPGet(RequestLine *req , HTTP_Response *res){
         strcpy(req->requestURI, defaultURI);
     }
 
-    char *content = readFile(req->requestURI);
+    size_t contentSize;
+    char *content = readFile(req->requestURI , &contentSize);
     
     // El archivo no existe
-    if (content == NULL) return STATUS_404 ;
+    if (content == NULL) return STATUS_404;
 
     // El archivo existe
     res->content = content; 
+    res->contentLength = contentSize;
+    
     return STATUS_200;
     
 }

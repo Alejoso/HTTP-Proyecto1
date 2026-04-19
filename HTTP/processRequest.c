@@ -1,5 +1,6 @@
 #include "processRequest.h"
 #include "methods/get.h"
+#include "methods/head.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -12,11 +13,10 @@ HTTP_Status processRequest(RequestLine *req , HTTP_Response *res){
 
     switch (req->method){
         case METHOD_GET:
-
             return HTTPGet(req , res);
 
         case METHOD_HEAD:
-            break;
+            return HTTPHead(req , res);
 
         case METHOD_POST:
             break;
